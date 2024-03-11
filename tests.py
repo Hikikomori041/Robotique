@@ -7,8 +7,8 @@ from ev3dev2.sound   import Sound
 from ev3dev2.display import Display
 from ev3dev2.button  import Button
 from ev3dev2.led     import Leds
-from ev3dev2.motor   import MoveSteering, MediumMotor
-from ev3dev2.motor   import OUTPUT_A, OUTPUT_D
+from ev3dev2.motor   import MoveSteering, MediumMotor, SpeedRPM
+from ev3dev2.motor   import OUTPUT_B, OUTPUT_C
 from ev3dev2.sensor.lego import UltrasonicSensor, ColorSensor
 from ev3dev2.sensor.lego import GyroSensor, TouchSensor
 from PIL             import Image  # should not be needed, but IT IS!
@@ -57,10 +57,11 @@ def wait_for_any_release(button):
 def intro(noisy, sound, display, tune = False):
     """ Checking sound (song & text to speach convertor)
     and display (clear & . """
-    show_image(display, 'EV3')
+    show_image(display, 'Disappointed')
     if (noisy):
         host_letter = socket.gethostname()[4]
-        sound.speak('Hello, I am E V 3 ' + host_letter + '!')
+        # sound.speak('Hello, I am E V 3 ' + host_letter + '!')
+        # sound.speak('Hello, I am here to say that Thomas is cool!')
     show_image(display, 'Neutral')
 
     # Star Wars' first notes (from ev3dev-lang.readthedocs.io)
@@ -78,7 +79,7 @@ def intro(noisy, sound, display, tune = False):
 # === Checking motors and sensors ====================================
 
 def large_motor_check(noisy, sound, display, button): #---------------
-    steer_motors = MoveSteering(OUTPUT_A, OUTPUT_D)
+    steer_motors = MoveSteering(OUTPUT_B, OUTPUT_C)
     if (noisy):  sound.speak('Checking Large Motor!')
     speed   = 0
     steer   = 0
@@ -249,6 +250,17 @@ def main(noisy = True):
 
     os.system('setfont Lat15-TerminusBold14')
     intro(noisy, sound, display)
+
+    # MediumMotor.on_for_seconds(MediumMotor, SpeedRPM(200), 5)
+    # large_motor_check(noisy, sound, display, button)
+    steer_motors = MoveSteering(OUTPUT_B, OUTPUT_C)
+    steer_motors.on(0, 100)
+    # wait for a button to be pressed
+    time.sleep(2)
+    steer_motors.off()
+    steer_motors.on(-100, -100)
+    steer_motors.off()
+
     while (looping):
         # display choice (image and leds' color)
         show_image(display, img_nms[choice])
