@@ -7,7 +7,7 @@ from ev3dev2.sound   import Sound
 from ev3dev2.display import Display
 from ev3dev2.button  import Button
 from ev3dev2.led     import Leds
-from ev3dev2.motor   import MoveSteering, MediumMotor, SpeedRPM
+from ev3dev2.motor   import MoveSteering, MediumMotor, SpeedRPM, MoveTank, SpeedPercent, follow_for_ms
 from ev3dev2.motor   import OUTPUT_B, OUTPUT_C
 from ev3dev2.sensor.lego import UltrasonicSensor, ColorSensor
 from ev3dev2.sensor.lego import GyroSensor, TouchSensor
@@ -58,8 +58,8 @@ def intro(noisy, sound, display, tune = False):
     """ Checking sound (song & text to speach convertor)
     and display (clear & . """
     show_image(display, 'Disappointed')
-    if (noisy):
-        host_letter = socket.gethostname()[4]
+    # if (noisy):
+        # host_letter = socket.gethostname()[4]
         # sound.speak('Hello, I am E V 3 ' + host_letter + '!')
         # sound.speak('Hello, I am here to say that Thomas is cool!')
     show_image(display, 'Neutral')
@@ -249,47 +249,75 @@ def main(noisy = True):
     max_choice = len(colors) - 1
 
     os.system('setfont Lat15-TerminusBold14')
-    intro(noisy, sound, display)
 
-    # MediumMotor.on_for_seconds(MediumMotor, SpeedRPM(200), 5)
-    # large_motor_check(noisy, sound, display, button)
-    steer_motors = MoveSteering(OUTPUT_B, OUTPUT_C)
-    steer_motors.on(0, 100)
-    # wait for a button to be pressed
-    time.sleep(2)
+
+    show_image(display, 'Flowers')  # affiche une image de fin pendant 3 secondes
+    time.sleep(5)
+    # intro(noisy, sound, display, True) # lit la musique de star wars
+
+
+    # Fait avancer puis reculer le robot pour tester ses moteurs
+    # steer_motors = MoveSteering(OUTPUT_B, OUTPUT_C)
+    # steer_motors.on(0, 25) # le fait aller tout droit a une vitesse raisonnable (25 rpm) 
+    # time.sleep(1) # pendant 1 seconde
+    # steer_motors.off()
+    # time.sleep(1) # pause de 1 seconde
+    # steer_motors.on(0, -25) # le fait aller en arrière a une vitesse raisonnable (25 rpm)
+    # time.sleep(1) # pendant 1 seconde
+    # steer_motors.off()
+
+    steer_motors = MoveTank(OUTPUT_B, OUTPUT_C)
+    steer_motors.gyro = GyroSensor()
+    # Calibrate the gyro to eliminate drift, and to initialize the current angle as 0
+    steer_motors.gyro.calibrate()
+
+    us_sensor = UltrasonicSensor()
+    speed = SpeedPercent(25) # vitesse de rotation des roues
+
+
+    while (not button.enter):
+        steer_motors.on(0, speed) # le fait aller tout droit a une vitesse raisonnable (25 rpm) 
+
+        time.sleep(2)
+        steer_motors.off()
+        time.sleep(1)
+
+        steer_motors.on_for_degrees(0, speed, 90)
+        # # Rotation 90 degrés
+        # steer_motors.turn_degrees(
+        #     speed=SpeedPercent(5),
+        #     target_angle=90
+        # )
+        time.sleep(1)
+
+
+
+    # while (not button.enter):
+    #     dist = us_sensor.distance_centimeters
+    #     print_display(display,  'Distance clear: ' + str(dist) )
+    #     if (dist > 25) :
+    #         steer_motors.on(0, rpm) # le fait aller tout droit a une vitesse raisonnable (25 rpm) 
+    #     else:
+    #         steer_motors.off()
+    #         time.sleep(0.5)
+
+    #         steer_motors.on(0, -rpm) # va en arrière 
+    #         time.sleep(0.5)
+    #         steer_motors.off()
+    #         time.sleep(0.5)
+
+    #         # steer_motors.on(75, 25) # tourne
+    #         # time.sleep(1)
+    #         steer_motors.run_angle(360, 90)
+
+    #         steer_motors.off()
+
+    #     time.sleep(0.5)  # Slow down the loop
+
     steer_motors.off()
-    steer_motors.on(-100, -100)
-    steer_motors.off()
-
-    while (looping):
-        # display choice (image and leds' color)
-        show_image(display, img_nms[choice])
-        color = colors[choice]
-        set_colors(leds, color, color)
-        # wait for a button to be pressed
-        while ( not button.any() ):  time.sleep(0.1)
-        # upper right button (backspace) quits the loop
-        looping = not button.backspace
-        if (looping):  # otherwise
-            # down or left decrease choice (cycling)
-            if (button.down or button.left):
-                if (choice > 0):
-                    choice -= 1
-                else:
-                    choice = max_choice
-            # up or right increase choice (cycling)
-            elif (button.up or button.right):
-                if (choice < max_choice):
-                    choice += 1
-                else:
-                    choice = 0
-            else:  # enter select the check
-                button.wait_for_released('enter')
-                motor_sensor_check(noisy, sound, display, button, 
-                                   choice)
-
-            # Avoid taking twice the same action
-            wait_for_any_release(button) 
+ 
+    show_image(display, 'Night')  # affiche une image de fin pendant 3 secondes
+    time.sleep(5)
 
 # When this module is called, it starts the main function.
 if __name__ == "__main__":
