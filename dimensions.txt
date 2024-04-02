@@ -1,1 +1,2 @@
-Diamètre roues (avec pneus): 55mm
+Diamètre roues (avec pneus): 5,5cm
+Espace entre capteur US et centre robot: 8cm
