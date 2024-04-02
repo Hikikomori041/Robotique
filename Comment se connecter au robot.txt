@@ -1,0 +1,18 @@
+Démarrer PuTTY
+> IP: celle affichée sur le robot (100.75.166.242)
+(le reste on change pas)
+
+Cela ouvrira une fenêtre de commande
+ > Username: robot
+ > Password: maker
+
+
+
+Pour éditer les fichiers du robot:
+  - Connexion sur Filezilla
+	(sftp://robot@100.75.166.242, username: robot, password: maker)
+
+
+
+Pour exécuter le fichier du robot:
+ > python3 tests.py
