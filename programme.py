@@ -62,10 +62,13 @@ def changeDirection(cote):
 
 def tourne(cote = "droite"):
     global direction # récupère la variable globale direction
+    global lastDistance, aTourne
+    lastDistance = None
+
     temps = 1550 / 1000
 
     if (DEBUG):
-        print("Tourne à " + cote)
+        print("On tourne à " + cote)
 
     if (cote == "gauche"):
         # On tourne à gauche
@@ -76,10 +79,13 @@ def tourne(cote = "droite"):
     tank_drive.off(brake=True)
     time.sleep(150/1000)
     direction = changeDirection(cote)
-    return
+    lastDistance = None
+    aTourne = True
+
 
 def recule():
     global robot_x, robot_y # On récupère les coordonnées du robot du programme
+    vitesse_recule = 1
 
     if (DEBUG):
         print("Le robot recule")
@@ -88,11 +94,11 @@ def recule():
     spkr.play_tone(800, 0.1, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
     time.sleep(500/1000)
     # Recule
-    tank_drive.on_for_seconds(SpeedRPS(1) * -1, SpeedRPS(1) * -1, 1)
+    tank_drive.on_for_seconds(SpeedRPS(vitesse_recule) * -1, SpeedRPS(vitesse_recule) * -1, 1)
     time.sleep(500/1000)
 
     # Calcul les nouvelles coordonnées du robot
-    deplacement = circonferenceRoue
+    deplacement = vitesse_recule*circonferenceRoue
     if(direction == Direction.HAUT):
         robot_y -= deplacement
     elif(direction == Direction.BAS):
@@ -104,7 +110,8 @@ def recule():
 
     #todo: verifier dans quelle direction on doit tourner
     tourne("gauche")
-    return
+    
+    
 
 def seDeplaceDe(deplacement):
     global robot_x, robot_y # On récupère les coordonnées du robot du programme
@@ -118,47 +125,73 @@ def seDeplaceDe(deplacement):
     elif(direction == Direction.DROITE):
         robot_x += deplacement
 
+def enregistreUnObstacle(distance):
+    global detecteUnObstacle, coords, direction
+
+    detecteUnObstacle = True
+    if(direction == Direction.HAUT):
+        x = round(robot_x + distance, 2)
+        y = round(robot_y, 2)
+    elif(direction == Direction.DROITE):
+        x = round(robot_x, 2)
+        y = round(robot_y - distance, 2)
+    elif(direction == Direction.BAS):
+        x = round(robot_x - distance, 2)
+        y = round(robot_y, 2)
+    elif(direction == Direction.GAUCHE):
+        x = round(robot_x, 2)
+        y = round(robot_y + distance, 2)
+    else:
+        if (DEBUG):
+            print("DIRECTION NON GÉRÉE: " + str(direction))
+        exit()
+    # if DEBUG:
+    #     print('Obstacle: ' + str(x) + ', ' + str(y))
+    coords += str(x) + ',' + str(y) + "\n"
+
+def grandEcartDistance(distance):
+    global lastDistance
+    return abs(lastDistance - distance) > 5
+
+def neDetectePlusObstacle():
+    # Ici, on ne détecte plus un obstacle, on devrait donc pouvoir tourner
+    global detecteUnObstacle, coords, faitLeTourDUnObstacle, lastDistance
+    lastDistance = None
+
+    if (DEBUG):
+        print("On est arrivé au bout d'un obstacle (" + str(faitLeTourDUnObstacle) + ")")
+    detecteUnObstacle = False
+    coords += "_\n"
+    distance = ultrasonic_sensor.distance_centimeters
+    if faitLeTourDUnObstacle < 4 and distance >= 20:
+        faitLeTourDUnObstacle += 1
+        time.sleep(500/1000)
+        deplacement = VITESSE_DU_ROBOT*circonferenceRoue/2
+        seDeplaceDe(deplacement)
+        tourne("droite")
+    else:
+        faitLeTourDUnObstacle = 0
+
 def avance():
     global robot_x, robot_y # On récupère les coordonnées du robot du programme
     global coords # On utilise la liste en variable globale pour pouvoir l'affecter
-    global detecteUnObstacle
+    global detecteUnObstacle, faitLeTourDUnObstacle
 
-    tank_drive.on(SpeedRPS(1), SpeedRPS(1))
-    deplacement = circonferenceRoue/30 # On part du principe que le calcul se fait 30 fois par seconde
+    tank_drive.on(SpeedRPS(VITESSE_DU_ROBOT), SpeedRPS(VITESSE_DU_ROBOT))
+    deplacement = VITESSE_DU_ROBOT*circonferenceRoue/30 # On part du principe que le calcul se fait 30 fois par seconde
     seDeplaceDe(deplacement)
     
     distance = ultrasonic_sensor.distance_centimeters
-    if distance < 255:
-        # Le capteur US a détecté quelque chose sur la droite du robot
-        detecteUnObstacle = True
-        if(direction == Direction.HAUT):
-            x = round(robot_x + distance, 2)
-            y = round(robot_y, 2)
-        elif(direction == Direction.DROITE):
-            x = round(robot_x, 2)
-            y = round(robot_y - distance, 2)
-        elif(direction == Direction.BAS):
-            x = round(robot_x - distance, 2)
-            y = round(robot_y, 2)
-        elif(direction == Direction.GAUCHE):
-            x = round(robot_x, 2)
-            y = round(robot_y + distance, 2)
-        else:
-            if (DEBUG):
-                print("DIRECTION NON GÉRÉE: " + str(direction))
-            exit()
+    grandEcart = grandEcartDistance(distance)
+    if grandEcart: # On sort du champ d'un obstacle
         if DEBUG:
-            print('Obstacle: ' + str(x) + ', ' + str(y))
-        coords += str(x) + ',' + str(y) + "\n"
-    else:
-        if detecteUnObstacle:
-            # Ici, on ne détecte plus un obstacle, on devrait donc pouvoir tourner
-            detecteUnObstacle = False
-            coords += "_\n"
-            time.sleep(500/1000)
-            deplacement = circonferenceRoue/2
-            seDeplaceDe(deplacement)
-            tourne("droite")
+            print("Nouvel obstacle détecté !")
+        if distance >= 20:
+            if DEBUG:
+                print("Cet obstacle est suffisamment loin (" + str(round(distance,2)) + " cm)")
+            neDetectePlusObstacle()
+
+
 
 #-------------------------------------------
 #               Programme
@@ -172,9 +205,13 @@ coords = ""
 robot_x = 0
 robot_y = 0
 detecteUnObstacle = False
+faitLeTourDUnObstacle = 0
+lastDistance = None
+aTourne = False
 
-DEBUG = False
-MAX_TIME = 35
+VITESSE_DU_ROBOT = 1
+DEBUG = True
+MAX_TIME = 60
 
 # Début du programme, bip sonore
 start_time = time.time()
@@ -185,12 +222,24 @@ time.sleep(500 / 1000)
 # todo A DECOMMENTER
 # for i in range(4):
 #     tourne("droite")
+#     distance = ultrasonic_sensor.distance_centimeters
+#     if distance < 255:
+#         enregistreUnObstacle(distance)
+#     lastDistance = distance
 
 running = True
 while running:
     # Calcul du temps écoulé
     current_time = time.time()
     temps_ecoule = (current_time - start_time)
+
+    distance = ultrasonic_sensor.distance_centimeters
+    if distance < 255:
+        enregistreUnObstacle(distance)
+    if lastDistance == None:
+        lastDistance = distance
+
+    # print("Distance/last: " + str(round(distance,2)) + " / " + str(round(lastDistance,2)))
 
     if (not touch_sensor.is_pressed):
         avance()
@@ -199,7 +248,11 @@ while running:
         if (DEBUG):
             print("Vient de heurter un obstacle")
         recule()
+        
+    if not aTourne:
+        lastDistance = distance
 
+    aTourne = False
 
     # todo A COMMENTER - arrête le programme après 90 secondes
     if (temps_ecoule >= MAX_TIME):
@@ -209,8 +262,9 @@ while running:
 
 
 
-# Fin du programme, bip sonore
+# Fin du programme, bips sonores
 tank_drive.off(brake=True)
+spkr.play_tone(400, 0.1, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 spkr.play_tone(400, 0.1, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
 # Enregistrement des coordonnées

@@ -103,9 +103,9 @@ while running:
             coordonnees = listeCoordonnees[i]
             if (dernieresCoordonnees != None):
                 if i%2==0:
-                    color = (192,192,192)
+                    color = (192,0,0)
                 else:
-                    color = (144,144,144)
+                    color = (192,192,0)
                 # color = random.choices(range(256), k=3)
                 draw_line_from_center(color, dernieresCoordonnees, coordonnees)
             dernieresCoordonnees = coordonnees
