@@ -74,6 +74,7 @@ def tourne(cote = "droite"):
         # On tourne à droite
         steering_drive.on_for_seconds(90, SpeedRPS(0.5), temps)
     tank_drive.off(brake=True)
+    time.sleep(150/1000)
     direction = changeDirection(cote)
     return
 
@@ -105,13 +106,8 @@ def recule():
     tourne("gauche")
     return
 
-def avance():
+def seDeplaceDe(deplacement):
     global robot_x, robot_y # On récupère les coordonnées du robot du programme
-    global coords # On utilise la liste en variable globale pour pouvoir l'affecter
-    global detecteUnObstacle
-
-    tank_drive.on(SpeedRPS(1), SpeedRPS(1))
-    deplacement = circonferenceRoue/30 # On part du principe que le calcul se fait 30 fois par seconde
     
     if(direction == Direction.HAUT):
         robot_y += deplacement
@@ -121,6 +117,15 @@ def avance():
         robot_x -= deplacement
     elif(direction == Direction.DROITE):
         robot_x += deplacement
+
+def avance():
+    global robot_x, robot_y # On récupère les coordonnées du robot du programme
+    global coords # On utilise la liste en variable globale pour pouvoir l'affecter
+    global detecteUnObstacle
+
+    tank_drive.on(SpeedRPS(1), SpeedRPS(1))
+    deplacement = circonferenceRoue/30 # On part du principe que le calcul se fait 30 fois par seconde
+    seDeplaceDe(deplacement)
     
     distance = ultrasonic_sensor.distance_centimeters
     if distance < 255:
@@ -151,6 +156,8 @@ def avance():
             detecteUnObstacle = False
             coords += "_\n"
             time.sleep(500/1000)
+            deplacement = circonferenceRoue/2
+            seDeplaceDe(deplacement)
             tourne("droite")
 
 #-------------------------------------------
@@ -167,7 +174,7 @@ robot_y = 0
 detecteUnObstacle = False
 
 DEBUG = False
-MAX_TIME = 15
+MAX_TIME = 35
 
 # Début du programme, bip sonore
 start_time = time.time()
@@ -207,7 +214,8 @@ tank_drive.off(brake=True)
 spkr.play_tone(400, 0.1, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
 # Enregistrement des coordonnées
-print("Liste des coordonnées des obstacles:\n" + str(coords))
+# print("Liste des coordonnées des obstacles:\n" + str(coords))
+print(coords)
 #todo: enregistrer dans un fichier .txt
 # Ouvrir le fichier en mode écriture
 with open('environnement.txt', 'w') as file:

@@ -7,15 +7,26 @@ import random
 
 # Fonctions et classes
 class Point:
-    def __init__(self, x, y):
+    def __init__(self, x, y, continueLigne=True):
         self.x = x
         self.y = y
+        self.continueLigne = continueLigne
 
 def draw_line(color, point1, point2):
     pygame.draw.line(window_surface, color, (point1.x, point1.y), (point2.x, point2.y), 4) # épaisseur du trait de 3 pixels
 
 def draw_line_from_center(color, point1, point2):
-   draw_line(color, Point( round(point1.x+CENTER,2) , round(point1.y+CENTER,2) ), Point( round(point2.x+CENTER,2) , round(point2.y+CENTER,2) ))
+   global continueLigne
+
+   if not point2.continueLigne:
+       point1 = point2
+       continueLigne = True
+
+   draw_line(
+       color,
+       Point(round(point1.x+CENTER,2), round(point1.y+CENTER,2), point1.continueLigne),
+       Point(round(point2.x+CENTER,2), round(point2.y+CENTER,2), point2.continueLigne)
+    )
 
 def drawCrossAt0_0():
     # Define the cross
@@ -40,14 +51,14 @@ def recupererListeCoordonnees():
             if line != "":
                 if line == "_":
                     continueLigne = False
-                    print("On arrête la ligne")
+                    # print("On arrête la ligne après le point " + str(nb_coords))
                 else:
                     # La ligne représente les coordonnées d'un obstacle
                     # Séparer les coordonnées
                     x, y = line.split(',')
                     
                     # Convertir les coordonnées en entiers et les ajouter à la liste
-                    point = Point(int(float(x)), -int(float(y)))
+                    point = Point(int(float(x)), -int(float(y)), continueLigne)
                     liste.append(point)
                     nb_coords += 1
     return liste
@@ -64,7 +75,7 @@ window_surface=pygame.display.set_mode(window_resolution)
 pygame.display.set_caption('Drawing walls')
 
 # Configuration de l'intervalle de temps (500 ms)
-intervalle = 50  # en millisecondes
+intervalle = 5  # en millisecondes
 
 # Création d'un événement personnalisé pour appeler la fonction
 MON_EVENEMENT = pygame.USEREVENT + 1
@@ -74,8 +85,8 @@ pygame.time.set_timer(MON_EVENEMENT, intervalle)
 temps_ecoule = 0
 i = 0
 dernieresCoordonnees = None
-listeCoordonnees = recupererListeCoordonnees()
 continueLigne = True
+listeCoordonnees = recupererListeCoordonnees()
 
 # Durée totale d'exécution
 duree_totale = intervalle * nb_coords  # en millisecondes
@@ -96,9 +107,6 @@ while running:
                 else:
                     color = (144,144,144)
                 # color = random.choices(range(256), k=3)
-                if not continueLigne:
-                    dernieresCoordonnees = coordonnees
-                    continueLigne = True
                 draw_line_from_center(color, dernieresCoordonnees, coordonnees)
             dernieresCoordonnees = coordonnees
             i += 1
