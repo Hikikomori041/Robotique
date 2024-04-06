@@ -2,7 +2,7 @@
   "name": "capteur_US_sur_le_cote",
   "shortDescription": "capteur_US_sur_le_cote",
   "longDescription": "<p>Custom robot created in the configurator.</p>",
-  "longerDescription": "<h3>#robot-dimensions#</h3><ul><li>#robot-wheelDiameter#: 5.6 cm</li><li>#robot-wheelSpacing#: 15.2 cm</li></ul><h3>#robot-actuators#</h3><ul><li>#robot-port# A : #robot-leftWheel#</li><li>#robot-port# B : #robot-rightWheel#</li></ul><h3>#robot-sensors#</h3><ul><li>#robot-port# 1 : #robot-touch#</li><li>#robot-port# 2 : #robot-gyro#</li><li>#robot-port# 3 : GPS</li><li>#robot-port# 4 : #robot-ultrasonic#</li></ul>",
+  "longerDescription": "<h3>#robot-dimensions#</h3><ul><li>#robot-wheelDiameter#: 5.6 cm</li><li>#robot-wheelSpacing#: 15.2 cm</li></ul><h3>#robot-actuators#</h3><ul><li>#robot-port# A : #robot-leftWheel#</li><li>#robot-port# B : #robot-rightWheel#</li></ul><h3>#robot-sensors#</h3><ul><li>#robot-port# 1 : #robot-touch#</li><li>#robot-port# 4 : #robot-ultrasonic#</li></ul>",
   "thumbnail": "",
   "bodyHeight": 4,
   "bodyWidth": 14,
@@ -40,24 +40,6 @@
         "width": 2,
         "depth": 2
       }
-    },
-    {
-      "type": "GyroSensor",
-      "position": [
-        0,
-        2.5,
-        2.5
-      ],
-      "options": null
-    },
-    {
-      "type": "GPSSensor",
-      "position": [
-        0,
-        2.5,
-        5
-      ],
-      "options": null
     },
     {
       "type": "UltrasonicSensor",

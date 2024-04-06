@@ -1,3 +1,6 @@
+Connexion RPyC: https://ev3dev-lang.readthedocs.io/projects/python-ev3dev/en/ev3dev-stretch/rpyc.html#networking
+
+-----------------------------------
 Démarrer PuTTY
 > IP: celle affichée sur le robot (100.75.166.242)
 (le reste on change pas)
