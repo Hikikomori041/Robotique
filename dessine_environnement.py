@@ -72,7 +72,9 @@ MAX_COORDS = CENTER - 10
 pygame.init()
 window_resolution=(SIZE,SIZE)
 window_surface=pygame.display.set_mode(window_resolution)
-pygame.display.set_caption('Dessin de l\'environnement')
+icone = pygame.image.load('crayon.ico')
+pygame.display.set_icon(icone)
+pygame.display.set_caption('Croquis de l\'environnement')
 
 # Configuration de l'intervalle de temps (2 ms)
 intervalle = 2  # en millisecondes
