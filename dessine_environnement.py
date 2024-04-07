@@ -72,10 +72,10 @@ MAX_COORDS = CENTER - 10
 pygame.init()
 window_resolution=(SIZE,SIZE)
 window_surface=pygame.display.set_mode(window_resolution)
-pygame.display.set_caption('Drawing walls')
+pygame.display.set_caption('Dessin de l\'environnement')
 
-# Configuration de l'intervalle de temps (500 ms)
-intervalle = 5  # en millisecondes
+# Configuration de l'intervalle de temps (2 ms)
+intervalle = 2  # en millisecondes
 
 # Création d'un événement personnalisé pour appeler la fonction
 MON_EVENEMENT = pygame.USEREVENT + 1
@@ -103,9 +103,9 @@ while running:
             coordonnees = listeCoordonnees[i]
             if (dernieresCoordonnees != None):
                 if i%2==0:
-                    color = (192,0,0)
+                    color = (192,0,0) # rouge
                 else:
-                    color = (192,192,0)
+                    color = (192,192,0) # yellow
                 # color = random.choices(range(256), k=3)
                 draw_line_from_center(color, dernieresCoordonnees, coordonnees)
             dernieresCoordonnees = coordonnees
