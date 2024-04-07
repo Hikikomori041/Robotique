@@ -20,7 +20,7 @@ from ev3dev2.sensor.virtual import * # utilisé par le simulateur, à commenter 
 # CONSTANTES
 VITESSE_DU_ROBOT = 1
 DEBUG = True            # Pour afficher le debug
-MAX_TIME = 90           # Temps maximal d'exécution du programme (en secondes)
+MAX_TIME = 300          # Temps maximal d'exécution du programme (en secondes)
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 
 # Les 4 directions possibles du robot
