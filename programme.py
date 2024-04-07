@@ -186,7 +186,7 @@ def neDetectePlusObstacle():
 
     if (DEBUG):
         print("On est arrivé au bout d'un obstacle (" + str(faitLeTourDUnObstacle) + ")")
-    coords += "_\n"
+    # coords += "_\n"
     distance = ultrasonic_sensor.distance_centimeters
     
     faitLeTourDUnObstacle += 1
@@ -219,7 +219,8 @@ def avance():
     if grandEcart: # On sort du champ d'un obstacle
         if DEBUG:
             print("Nouvel obstacle détecté !")
-        if distance >= 20:
+        coords += "_\n"
+        if distance >= 20 and lastDistance < 100:
             if DEBUG:
                 print("Cet obstacle est suffisamment loin (" + str(round(distance,2)) + " cm)")
             if time.time() - lastTimeTour > 1.5:

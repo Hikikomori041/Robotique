@@ -77,7 +77,7 @@ pygame.display.set_icon(icone)
 pygame.display.set_caption('Croquis de l\'environnement')
 
 # Configuration de l'intervalle de temps (2 ms)
-intervalle = 2  # en millisecondes
+intervalle = 5  # en millisecondes
 
 # Création d'un événement personnalisé pour appeler la fonction
 MON_EVENEMENT = pygame.USEREVENT + 1
