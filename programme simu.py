@@ -231,7 +231,7 @@ def avance():
         if DEBUG:
             print("Nouvel obstacle detecte !")
         coords += "_\n"
-        if distance >= 2.0 and lastDistance < 10.0:
+        if distance >= 20 and lastDistance < 100:
             if DEBUG:
                 print("Cet obstacle est suffisamment loin (" + str(round(distance,2)) + " cm)")
             if time.time() - lastTimeTour > 1.5:
@@ -281,7 +281,7 @@ while running:
     distance = ultrasonic_sensor.distance_centimeters
     if not SIMULATEUR:
         distance /= 10
-    if distance < 25.5:
+    if distance < 255:
         enregistreUnObstacle(distance)
     if lastDistance == None:
         lastDistance = distance
