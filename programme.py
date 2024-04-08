@@ -8,7 +8,7 @@ from ev3dev2.sound import Sound
 from ev3dev2.button import Button
 from ev3dev2.sensor import *
 from ev3dev2.sensor.lego import *
-from ev3dev2.sensor.virtual import * # utilisé par le simulateur, à commenter pour une exécution réelle
+# from ev3dev2.sensor.virtual import * # utilisé par le simulateur, à commenter pour une exécution réelle
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 # VARIABLES GLOBALES
@@ -83,7 +83,7 @@ def tourne(cote = "droite"):
     temps = 1550 / 1000
 
     if (DEBUG):
-        print("On tourne à " + cote)
+        print("On tourne a " + cote)
 
     if (cote == "gauche"):
         # On tourne à gauche
@@ -165,7 +165,7 @@ def enregistreUnObstacle(distance):
         y = round(robot_y + distance, 2)
     else:
         if (DEBUG):
-            print("DIRECTION NON GÉRÉE: " + str(direction))
+            print("DIRECTION NON GEREE: " + str(direction))
         exit()
     coords += str(x) + ',' + str(y) + "\n"
 
@@ -185,7 +185,7 @@ def neDetectePlusObstacle():
     lastDistance = None
 
     if (DEBUG):
-        print("On est arrivé au bout d'un obstacle (" + str(faitLeTourDUnObstacle) + ")")
+        print("On est arrive au bout d un obstacle (" + str(faitLeTourDUnObstacle) + ")")
     # coords += "_\n"
     distance = ultrasonic_sensor.distance_centimeters
     
@@ -218,7 +218,7 @@ def avance():
     grandEcart = grandEcartDistance(distance)
     if grandEcart: # On sort du champ d'un obstacle
         if DEBUG:
-            print("Nouvel obstacle détecté !")
+            print("Nouvel obstacle detecte !")
         coords += "_\n"
         if distance >= 20 and lastDistance < 100:
             if DEBUG:
@@ -289,7 +289,7 @@ while running:
     # Arrête le programme après avoir atteind son temps d'exécution maximal, ou lorsque l'on appuie sur le bouton ENTER
     if (temps_ecoule >= MAX_TIME or btn.enter):
         if (DEBUG):
-            print("Temps écoulé: ", str(round(temps_ecoule, 2)) + "s")
+            print("Temps ecoule: ", str(round(temps_ecoule, 2)) + "s")
         running = False
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ spkr.play_tone(400, 0.1, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
 
 # Enregistrement des coordonnées
-print(coords) #todo - à commenter, ne sert que pour le simulateur qui n'écrit pas de fichier .txt
+# print(coords) #todo - à commenter, ne sert que pour le simulateur qui n'écrit pas de fichier .txt
 
 # Ouvrir le fichier en mode écriture
 with open('environnement.txt', 'w') as file:
