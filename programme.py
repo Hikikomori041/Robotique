@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-SIMULATEUR = False
+SIMULATEUR = False # Le simulateur fonctionne légèrement différemment de la réalite, donc on change certaines lignes du programme selon (False = réalité)
 
 # Imports des librairies utilisées
 import time
@@ -24,6 +24,7 @@ if SIMULATEUR:
 VITESSE_DU_ROBOT = 1
 DEBUG = True            # Pour afficher le debug
 MAX_TIME = 300          # Temps maximal d'exécution du programme (en secondes)
+MAX_DISTANCE = 255      # Distance maximale captée par le robot (en cm dans le simulateur)
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 
 # Les 4 directions possibles du robot
@@ -203,7 +204,7 @@ def neDetectePlusObstacle():
     seDeplaceDe(deplacement)
     lastDistance = distance
     
-    if faitLeTourDUnObstacle > 0 and faitLeTourDUnObstacle <= 4 and distance >= 20:
+    if faitLeTourDUnObstacle > 0 and faitLeTourDUnObstacle <= 4 and distance >= 2.0:
         # Si le robot est en train de faire le tour d'un obstacle, et qu'il a la place de tourner
         tourne("droite")
     else:
